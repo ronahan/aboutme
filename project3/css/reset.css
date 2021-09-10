@@ -1,0 +1,35 @@
+@charset "utf-8";
+
+* {
+	box-sizing: border-box;
+}
+body, h1, h2, h3, h4, h5, h6, p, ul, ol, table, dl, dd{
+	margin: 0;
+	padding: 0;
+}
+body{
+	min-width:320px;
+	overflow-y: auto;
+}
+body.fixed {
+	overflow-y: hidden;
+}
+ul, ol {
+	list-style: none;
+}
+a {
+	text-decoration: none;
+	color: #000;
+}
+img {
+	vertical-align: top;
+	border: 0;
+	margin: 0;
+}
+.clearfix::before, .clearfix::after {
+	content: "";
+	display: block;
+}
+.clearfix::after {
+	clear: both;
+}
