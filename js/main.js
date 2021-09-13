@@ -11,6 +11,8 @@ $(function(){
 		$("#gnb li").eq(n).addClass("active");
 		$(".project_list > ul > li").eq(n).addClass("active");
 		$(".controller li").eq(n).addClass("on");
+		wheelGalleryUI("pc1"),
+		wheelGalleryUI("mo1");
 	}
 	init();
 
@@ -72,15 +74,24 @@ $(function(){
 	});
 
 	//포트폴리오 리스트 열기
+	var portN=0;
+
 	$(".project_list .p_title").click(function(e){
 		e.preventDefault();
 
-		$("project_list > ul > li").removeClass("active");
+
 		var parentLi=$(this).parent().parent().parent();
-		if(n == parentLi.index()) return;
+
+		if(portN == parentLi.index()) return;
+		portN=parentLi.index();
+		$("project_list > ul > li").removeClass("active");
 		parentLi.addClass("active");
 		pos=Math.round($(this).offset().top-galleryGap);
-		$("html").animate({scrollTop:pos},800);
+
+		$("html").animate({scrollTop:pos},800, function(){
+			wheelGalleryUI("pc"+(portN+1));
+			wheelGalleryUI("mo"+(portN+1));
+		});
 	});
 
 	//비디오 실행
@@ -136,64 +147,68 @@ $(function(){
 	});
 
 	// hover wheel
-	var pscroll=0;
-	var pimg=$(".pc .photo img").height();
-	var pmask=550;
-	var pable=pimg-pmask;
 
-	var mscroll=0;
-	var mimg=$(".mobile .photo img").height();
-	var mmask=620;
-	var mable=mimg-mmask;
+	function wheelGalleryUI(target){
+		var maskH=$("#"+target+" .outbox .photo").height();
+		var img=$("#"+target+" .outbox .photo img");
+		var imgH=img.height();
+		var able=imgH-maskH;
+		var step=Math.round(able/60);
+		var scrollAmount=parseInt(img.css("top"));
+		 // console.log(maskH, imgH, able, step, scrollAmount);
 
-	$(".wrapper").mousewheel(function(e,delta){
-
-		if(e.target.className === "pc_dim"){
-			e.preventDefault();
-			if(delta > 0){
-				if(pscroll > 0){
-					pscroll-=10;
+		$("#"+target).mousewheel(function(e, delta){
+			if(e.target.className != "pc_dim") return;
+				if(delta > 0){
+					if(scrollAmount > 0){
+						scrollAmount-=10;
+					}
+					else{
+						scrollAmount=0;
+					}
 				}
 				else{
-					pscroll=0;
+					if(scrollAmount < able){
+						scrollAmount+=10;
+					}
+					else{
+						scrollAmount=able;
+					}
 				}
-			}
-			else{
-				if(pscroll < pable){
-					pscroll+=10;
-				}
-				else{
-					pscroll=pable;
-				}
-			}
-			$(".pc .photo img").css({top:-1*pscroll});
-			return false;
-		}
-		if(e.target.className === "mo_dim"){
-			e.preventDefault();
-			if(delta > 0){
-				if(mscroll > 0){
-					mscroll-=10;
-				}
-				else{
-					mscroll=0;
-				}
-			}
-			else{
-				if(mscroll < mable){
-					mscroll+=10;
+				img.css({top:-1*scrollAmount});
+			});
+		$("#"+target).mousewheel(function(e, delta){
+			if(e.target.className != "mo_dim") return;
+				if(delta > 0){
+					if(scrollAmount > 0){
+						scrollAmount-=10;
+					}
+					else{
+						scrollAmount=0;
+					}
 				}
 				else{
-					mscroll=mable;
+					if(scrollAmount < able){
+						scrollAmount+=10;
+					}
+					else{
+						scrollAmount=able;
+					}
 				}
+				img.css({top:-1*scrollAmount});
+			});
+	}
+		$(".open_area").mousewheel(function(e, delta){
+			if(e.target.className === "pc_dim"){
+				return false;
 			}
-			$(".mobile .photo img").css({top:-1*mscroll});
-			return false;
-		}
+			if(e.target.className === "mo_dim"){
+				return false;
+			}
+		});
 
 
-	});
-	/*프로젝트 연동*/
+	//프로젝트 연동
 	function mobileLink(){
 		if(isMobile){
 			$("#page3 .project_list .open_area .inner .text_area .p1").attr({href: "project1/mobile/index.html"});
